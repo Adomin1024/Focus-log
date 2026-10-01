@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #1d2a6b;
+  --color-teal: #0e7c86;
+  --color-amber: #e8a33d;
+  --color-mist: #f3f4fb;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+
+body { @apply bg-white text-slate-800 antialiased; font-family: system-ui, sans-serif; }
+:focus-visible { outline: 3px solid var(--color-amber); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
