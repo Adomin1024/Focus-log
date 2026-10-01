@@ -12,31 +12,26 @@ function Layout() {
   if (loading) return <p className="p-8" role="status">Loading…</p>
   if (!session) return <Login />
 
-  const link = 'rounded-md px-3 py-2 font-medium text-navy hover:bg-mist'
-  const active = { className: 'bg-navy text-white hover:bg-navy' }
-  return (
-    <>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:bg-white focus:p-2">
-        Skip to content
-      </a>
-      <header className="border-b border-slate-200">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-4 px-4 py-3">
-          <span className="font-display text-2xl font-bold text-navy">Focus Log</span>
-          <nav aria-label="Main" className="flex gap-1">
-            <Link to="/" className={link} activeProps={active} activeOptions={{ exact: true }}>Timer</Link>
-            <Link to="/habits" className={link} activeProps={active}>Habits</Link>
-            <Link to="/weekly" className={link} activeProps={active}>Week</Link>
-          </nav>
-          <button onClick={() => supabase.auth.signOut()} className="ml-auto rounded-md px-3 py-2 text-slate-700 underline">
-            Sign out
-          </button>
-        </div>
-      </header>
-      <main id="main" className="mx-auto max-w-3xl px-4 py-8">
-        <Outlet />
-      </main>
-    </>
-  )
+  const tab = 'flex flex-1 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-sm font-bold text-white'
+const active = { className: 'bg-white text-ink' }
+return (
+  <>
+    <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-white focus:p-2 focus:text-ink">Skip to content</a>
+    <header className="mx-auto flex max-w-md justify-end px-5 pt-4">
+      <button onClick={() => supabase.auth.signOut()} className="pill-ghost !py-1 text-sm">Sign out</button>
+    </header>
+    <main id="main" className="mx-auto max-w-md px-5 pb-28 pt-4">
+      <Outlet />
+    </main>
+    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 bg-black/30 backdrop-blur">
+      <div className="mx-auto flex max-w-md gap-2 px-4 py-2">
+        <Link to="/" className={tab} activeProps={active} activeOptions={{ exact: true }}><span aria-hidden="true">⏱️</span>Timer</Link>
+        <Link to="/habits" className={tab} activeProps={active}><span aria-hidden="true">✅</span>Habits</Link>
+        <Link to="/weekly" className={tab} activeProps={active}><span aria-hidden="true">📊</span>Week</Link>
+      </div>
+    </nav>
+  </>
+)
 }
 
 const root = createRootRoute({ component: Layout })

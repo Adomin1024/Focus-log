@@ -40,13 +40,13 @@ export default function Weekly() {
 
   return (
     <>
-      <h1 className="font-display text-3xl font-bold text-navy">Last 7 days</h1>
-      {error && <p role="alert" className="mt-2 text-red-700">{error}</p>}
-      <p className="mt-2 text-slate-700">{totalMin} minutes focused this week.</p>
+      <h1 className="font-display text-3xl font-extrabold text-white">Last 7 days</h1>
+      {error && <p role="alert" className="mt-2 text-white font-semibold">{error}</p>}
+      <p className="mt-2 text-cream">{totalMin} minutes focused this week.</p>
       <table className="mt-6 w-full text-left">
         <caption className="sr-only">Focus minutes and habits completed per day</caption>
         <thead>
-          <tr className="border-b border-slate-300 text-navy">
+          <tr className="border-b border-white/20 text-white">
             <th scope="col" className="py-2">Day</th>
             <th scope="col">Focus</th>
             <th scope="col" className="text-right">Habits</th>
@@ -54,11 +54,11 @@ export default function Weekly() {
         </thead>
         <tbody>
           {days.map((d) => (
-            <tr key={d.key} className="border-b border-slate-200">
+            <tr key={d.key} className="border-b border-white/20">
               <th scope="row" className="py-3 pr-3 font-medium">{d.label}</th>
               <td className="w-1/2">
                 <div className="flex items-center gap-2">
-                  <div className="h-3 rounded bg-teal" style={{ width: `${(d.focusMin / maxMin) * 100}%`, minWidth: d.focusMin ? 4 : 0 }} aria-hidden="true" />
+                  <div className="h-3 rounded-full bg-peach" style={{ width: `${(d.focusMin / maxMin) * 100}%`, minWidth: d.focusMin ? 4 : 0 }} aria-hidden="true" />
                   <span>{d.focusMin} min</span>
                 </div>
               </td>

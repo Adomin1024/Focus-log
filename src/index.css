@@ -1,13 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #1d2a6b;
-  --color-teal: #0e7c86;
-  --color-amber: #e8a33d;
-  --color-mist: #f3f4fb;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --color-mocha: #75655a;
+  --color-mocha-deep: #5f5148;
+  --color-cream: #f6efe6;
+  --color-peach: #f4a77a;
+  --color-ink: #3a2f28;
+  --font-display: "Nunito", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
 }
 
-body { @apply bg-white text-slate-800 antialiased; font-family: system-ui, sans-serif; }
-:focus-visible { outline: 3px solid var(--color-amber); outline-offset: 2px; }
+body {
+  @apply min-h-dvh text-white antialiased;
+  font-family: var(--font-display);
+  background: linear-gradient(var(--color-mocha), var(--color-mocha-deep)) fixed;
+}
+body[data-mode="break"] { background: linear-gradient(#4c6677, #3d5260) fixed; }
+
+:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+@layer components {
+  .card { @apply rounded-[2rem] bg-white/8 p-5; }
+  .pill { @apply rounded-full bg-peach px-8 py-4 text-xl font-extrabold text-ink shadow-[0_6px_0_#c9784a] transition active:translate-y-1 active:shadow-[0_2px_0_#c9784a]; }
+  .pill-ghost { @apply rounded-full px-6 py-2 font-bold text-white underline; }
+  .chip { @apply min-w-14 rounded-full px-4 py-2 text-xl font-bold; }
+}

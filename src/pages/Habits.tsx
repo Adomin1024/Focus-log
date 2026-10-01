@@ -54,22 +54,22 @@ export default function Habits() {
 
   return (
     <>
-      <h1 className="font-display text-3xl font-bold text-navy">Today's habits</h1>
-      {error && <p role="alert" className="mt-2 text-red-700">{error}</p>}
-      {habits.length === 0 && <p className="mt-4 text-slate-700">No habits yet. Add one below.</p>}
+      <h1 className="font-display text-3xl font-extrabold text-white">Today's habits</h1>
+      {error && <p role="alert" className="mt-2 text-cream">{error}</p>}
+      {habits.length === 0 && <p className="mt-4 text-cream">No habits yet. Add one below.</p>}
       <ul className="mt-4 space-y-2">
         {habits.map((h) => {
           const days = new Set(checks.filter((c) => c.habit_id === h.id).map((c) => c.day))
           const done = days.has(today)
           const s = streak(days)
           return (
-            <li key={h.id} className="flex items-center gap-3 rounded-lg bg-mist p-3">
+            <li key={h.id} className="card !p-3 flex items-center gap-3">
               <label className="flex flex-1 items-center gap-3 text-lg">
-                <input type="checkbox" checked={done} onChange={() => toggle(h, done)} className="size-6 accent-teal" />
-                <span className={done ? 'text-slate-600 line-through' : ''}>{h.name}</span>
+                <input type="checkbox" checked={done} onChange={() => toggle(h, done)} className="size-7 accent-peach" />
+                <span className={done ? 'text-cream line-through' : ''}>{h.name}</span>
               </label>
-              <span className="font-semibold text-navy">{s} day{s === 1 ? '' : 's'}</span>
-              <button onClick={() => remove(h)} className="rounded px-2 py-1 text-red-700 underline" aria-label={`Delete ${h.name}`}>Delete</button>
+              <span className="font-semibold text-white" aria-label={`${s} day streak`}>🔥 {s}</span>
+              <button onClick={() => remove(h)} className="rounded px-2 py-1 text-white font-semibold" aria-label={`Delete ${h.name}`}>Delete</button>
             </li>
           )
         })}
@@ -77,9 +77,9 @@ export default function Habits() {
       <form onSubmit={add} className="mt-8 flex gap-2">
         <label className="flex-1">
           <span className="sr-only">New habit</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder="New habit, e.g. Read 20 pages" className="w-full rounded-md border border-slate-500 px-3 py-2" />
+          <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder="New habit, e.g. Read 20 pages" className="w-full rounded-full bg-white px-5 py-3 text-ink placeholder:text-slate-600" />
         </label>
-        <button className="rounded-md bg-navy px-4 py-2 font-semibold text-white">Add habit</button>
+        <button className="pill !px-6 !py-3 !text-base">Add habit</button>
       </form>
     </>
   )

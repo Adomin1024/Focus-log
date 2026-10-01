@@ -1,10 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Alpaca from '../components/Alpaca'
 import { supabase } from '../lib/supabase'
 
 type Mode = 'focus' | 'break'
 type Row = { id: string; kind: Mode; duration_sec: number; created_at: string }
 
 const mmss = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+
+function Chips({ label, value, set, options }: { label: string; value: number; set: (n: number) => void; options: number[] }) {
+  return (
+    <div className="mt-4">
+      <p className="font-bold">{label}</p>
+      <div role="radiogroup" aria-label={`${label} length in minutes`} className="mt-2 flex gap-2 overflow-x-auto pb-1">
+        {options.map((o) => (
+          <button key={o} role="radio" aria-checked={o === value} onClick={() => set(o)}
+            className={`chip ${o === value ? 'bg-white text-ink' : 'text-white'}`}>{o}</button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function Timer() {
   const [work, setWork] = useState(25)
@@ -31,6 +46,11 @@ export default function Timer() {
   useEffect(() => { if (!running) setLeft(total) }, [total, running])
 
   useEffect(() => {
+  document.body.dataset.mode = mode
+  return () => { delete document.body.dataset.mode }
+}, [mode])
+
+  useEffect(() => {
     if (!running) return
     const id = setInterval(async () => {
       const l = Math.max(0, Math.round((endRef.current - Date.now()) / 1000))
@@ -55,46 +75,45 @@ export default function Timer() {
   const num = 'mt-1 w-24 rounded-md border border-slate-500 px-2 py-1'
 
   return (
-    <>
-      <h1 className="font-display text-3xl font-bold text-navy">{mode === 'focus' ? 'Focus' : 'Break'}</h1>
-      <p className="mt-6 text-center font-display text-8xl font-bold tabular-nums text-navy" role="timer" aria-label={`${mmss(left)} remaining`}>
-        {mmss(left)}
-      </p>
-      <div className="mt-6 flex justify-center gap-3">
-        <button onClick={toggle} className="rounded-md bg-teal px-6 py-2 text-lg font-semibold text-white">
-          {running ? 'Pause' : 'Start'}
-        </button>
-        <button onClick={() => { setRunning(false); setLeft(total) }} className="rounded-md border border-navy px-6 py-2 text-lg font-semibold text-navy">
-          Reset
-        </button>
-      </div>
+  <>
+    <Alpaca mood={mode} />
+    <h1 className="sr-only">{mode === 'focus' ? 'Focus' : 'Break'} timer</h1>
+    <p className="mt-2 text-center text-7xl font-extrabold tabular-nums" role="timer" aria-label={`${mmss(left)} remaining`}>
+      {mmss(left)}
+    </p>
+    <div className="mx-auto mt-4 h-2 max-w-sm overflow-hidden rounded-full bg-white/20" aria-hidden="true">
+      <div className="h-full rounded-full bg-peach" style={{ width: `${(1 - left / total) * 100}%` }} />
+    </div>
 
-      <fieldset className="mt-10 flex gap-6 rounded-lg bg-mist p-4" disabled={running}>
-        <legend className="px-1 font-semibold text-navy">Lengths (minutes)</legend>
-        <label>Focus
-          <input type="number" min={1} max={120} value={work} onChange={(e) => setWork(Math.max(1, +e.target.value || 1))} className={`block ${num}`} />
-        </label>
-        <label>Break
-          <input type="number" min={1} max={60} value={rest} onChange={(e) => setRest(Math.max(1, +e.target.value || 1))} className={`block ${num}`} />
-        </label>
-      </fieldset>
+    <div className="mt-6 flex flex-col items-center gap-2">
+      <button onClick={toggle} className="pill w-full max-w-sm">
+        {running ? 'Pause' : `${mode === 'focus' ? 'Focus' : 'Break'} ${mode === 'focus' ? work : rest} min`}
+      </button>
+      <button onClick={() => { setRunning(false); setLeft(total) }} className="pill-ghost">Reset</button>
+    </div>
 
-      <h2 className="mt-10 text-xl font-semibold text-navy">Today: {focusMin} min focused</h2>
-      {error && <p role="alert" className="mt-2 text-red-700">{error}</p>}
-      {rows.length === 0 ? (
-        <p className="mt-2 text-slate-700">No sessions yet. Start the timer to log your first one.</p>
-      ) : (
-        <ul className="mt-2 divide-y divide-slate-200">
-          {rows.map((r) => (
-            <li key={r.id} className="flex justify-between py-2">
-              <span className="capitalize">{r.kind}, {Math.round(r.duration_sec / 60)} min</span>
-              <time dateTime={r.created_at} className="text-slate-700">
-                {new Date(r.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-              </time>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
-  )
+    <fieldset className="card mt-8" disabled={running}>
+      <legend className="sr-only">Lengths</legend>
+      <Chips label="Focus" value={work} set={setWork} options={[15, 20, 25, 30, 45, 50, 60]} />
+      <Chips label="Break" value={rest} set={setRest} options={[3, 5, 10, 15]} />
+    </fieldset>
+
+    <h2 className="mt-10 text-xl font-extrabold">Today: {focusMin} min focused</h2>
+    {error && <p role="alert" className="mt-2 font-semibold">Error: {error}</p>}
+    {rows.length === 0 ? (
+      <p className="mt-2 text-cream">No sessions yet. Start the timer to log your first one.</p>
+    ) : (
+      <ul className="card mt-3 divide-y divide-white/20 !py-2">
+        {rows.map((r) => (
+          <li key={r.id} className="flex justify-between py-2">
+            <span className="capitalize">{r.kind}, {Math.round(r.duration_sec / 60)} min</span>
+            <time dateTime={r.created_at}>
+              {new Date(r.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+            </time>
+          </li>
+        ))}
+      </ul>
+    )}
+  </>
+)
 }
